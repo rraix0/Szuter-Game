@@ -13,14 +13,9 @@ pub struct Maps {
 pub struct Objects {
     pub id: Uuid,
     pub data: Bytes,
-    pub group: Uuid,
+    pub group: String,
     pub name: String,
     pub shoot_by: bool,
     pub strength: Option<u8>,
     pub walk_on: bool,
-}
-#[derive(Clone, Debug, SurrealValue, Deserialize, Serialize)]
-pub struct ObjectsGroups {
-    pub id: Uuid,
-    pub name: String,
 }
