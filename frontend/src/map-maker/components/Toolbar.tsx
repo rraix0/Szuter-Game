@@ -1,9 +1,24 @@
-import { event } from "@tauri-apps/api";
 import { useState } from "react";
+import type { MapObject } from "../types/object";
 
+const objects: MapObject[] = [
+  {
+    id: "wall",
+    name: "Wall",
+  },
+  {
+    id: "concrete",
+    name: "Concrete",
+  },
+  {
+    id: "woodenblock",
+    name: "WoodenBlock",
+  },
+];
 
 export default function Toolbar() {
   const [layer, setlayer] = useState("background");
+  const [selectedObject, setSelectedObject] = useState<string | null>(null);
 
   return (
     <aside className="flex w-52 flex-col gap-4">
@@ -30,9 +45,15 @@ export default function Toolbar() {
           Blocks
         </span>
 
-        <button type="button" className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-left text-sm text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200">
-          Empty
-        </button>
+        {objects.map((object) => (
+          <button key={object.id} type="button" onClick={() => setSelectedObject(object.id)} className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
+              selectedObject === object.id
+                ? "border-zinc-600 bg-zinc-800 text-zinc-50"
+                : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200"
+            }`}>
+              {object.name}
+          </button>
+        ))}
       </div>
     </aside>
   );
