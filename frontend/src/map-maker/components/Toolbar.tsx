@@ -77,7 +77,7 @@ export default function Toolbar({
   );
 
   return (
-    <aside className="flex w-52 flex-col gap-4">
+    <aside className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
         <label
           htmlFor="layer"
