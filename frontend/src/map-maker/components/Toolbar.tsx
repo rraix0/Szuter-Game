@@ -1,4 +1,5 @@
 import type { MapObject } from "../types/object";
+
 import type { MapLayerType } from "../types/map";
 
 type ToolbarProps = {
@@ -10,34 +11,58 @@ type ToolbarProps = {
 
 const objects: MapObject[] = [
   {
-    code: "0A1",
+    id: "0A1",
     name: "Dirt",
-    icon: "",
+    data: "",
+    group: "background",
+    shoot_by: true,
+    strength: null,
+    walk_on: true,
   },
   {
-    code: "0A2",
+    id: "0A2",
     name: "Dirt variant",
-    icon: "",
+    data: "",
+    group: "background",
+    shoot_by: true,
+    strength: null,
+    walk_on: true,
   },
   {
-    code: "0B1",
+    id: "0B1",
     name: "Concrete",
-    icon: "",
+    data: "",
+    group: "background",
+    shoot_by: true,
+    strength: null,
+    walk_on: true,
   },
   {
-    code: "0B2",
+    id: "0B2",
     name: "Damaged concrete",
-    icon: "",
+    data: "",
+    group: "background",
+    shoot_by: true,
+    strength: null,
+    walk_on: true,
   },
   {
-    code: "1A1",
+    id: "1A1",
     name: "Wooden crate",
-    icon: "",
+    data: "",
+    group: "blocks",
+    shoot_by: false,
+    strength: 100,
+    walk_on: false,
   },
   {
-    code: "1A2",
+    id: "1A2",
     name: "Damaged wooden crate",
-    icon: "",
+    data: "",
+    group: "blocks",
+    shoot_by: false,
+    strength: 50,
+    walk_on: false,
   },
 ];
 
@@ -47,13 +72,16 @@ export default function Toolbar({
   selectedObject,
   onSelectObject
 }: ToolbarProps) {
+  const filteredObjects = objects.filter(
+    (object) => object.group === layer
+  );
+
   return (
     <aside className="flex w-52 flex-col gap-4">
       <div className="flex flex-col gap-2">
         <label htmlFor="layer" className="text-sm font-medium text-zinc-300">
           Layer
         </label>
-
         <select
           id="layer"
           value={layer}
@@ -63,7 +91,6 @@ export default function Toolbar({
           <option value="background">
             Background
           </option>
-
           <option value="blocks">
             Blocks
           </option>
@@ -77,13 +104,13 @@ export default function Toolbar({
           {layer === "background" ? "Background" : "Blocks"}
         </span>
 
-        {objects.map((object) => (
+        {filteredObjects.map((object) => (
           <button
-            key={object.code}
+            key={object.id}
             type="button"
-            onClick={() => onSelectObject(object.code)}
+            onClick={() => onSelectObject(object.id)}
             className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
-              selectedObject === object.code
+              selectedObject === object.id
                 ? "border-zinc-600 bg-zinc-800 text-zinc-50"
                 : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200"
             }`}

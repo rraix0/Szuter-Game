@@ -1,5 +1,9 @@
 export type MapObject = {
-  code: string;
+  id: string;
   name: string;
-  icon: string;
+  data: string;
+  group: string;
+  shoot_by: boolean;
+  strength: number | null;
+  walk_on: boolean;
 };
