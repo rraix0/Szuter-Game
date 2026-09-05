@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { MapConfig } from "../types/map";
+import { MapConfig, MapData, MapLayerType } from "../types/map";
 
 import MapCanvas from "./MapCanvas";
 import Toolbar from "./Toolbar";
@@ -14,8 +14,19 @@ type MapEditorProps = {
 export default function MapEditor({
   config,
 }: MapEditorProps) {
+  const [layer, setLayer] = useState<MapLayerType>("background");
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
 
+  const [mapData, setMapData] = useState<MapData>(() => ({
+    background: Array.from(
+      { length: config.height },
+      () => Array(config.width).fill(null)
+    ),
+    blocks: Array.from(
+      { length: config.height },
+      () => Array(config.width).fill(null)
+    ),
+  }));
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-300 p-6">
       <div className="flex flex-col gap-6">
@@ -37,7 +48,9 @@ export default function MapEditor({
 
         <div className="flex gap-6">
           <div className="shrink-0 rounded-2xl border border-zinc-800 bg-zinc-900 p-4 shadow-2xl shadow-black/40">
-            <Toolbar 
+            <Toolbar
+              layer={layer}
+              onLayerChange={setLayer}
               selectedObject={selectedObject}
               onSelectObject={setSelectedObject}
             />
@@ -47,7 +60,10 @@ export default function MapEditor({
             <MapCanvas
               width={config.width}
               height={config.height}
+              layer={layer}
               selectedObject={selectedObject}
+              mapData={mapData}
+              setMapData={setMapData}
             />
           </div>
         </div>

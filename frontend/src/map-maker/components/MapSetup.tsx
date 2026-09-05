@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import type { MapConfig } from "../types/map";
-import { event } from "@tauri-apps/api";
 
 type MapSetupProps = {
   onCreate: (config: MapConfig) => void;

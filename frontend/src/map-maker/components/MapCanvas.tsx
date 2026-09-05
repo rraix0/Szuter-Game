@@ -1,14 +1,42 @@
+import type { MapData, MapLayerType } from "../types/map";
+import type { Dispatch, SetStateAction } from "react";
+
 type MapCanvasProps = {
   width: number;
   height: number;
+  layer: MapLayerType;
   selectedObject: string | null;
+  mapData: MapData;
+  setMapData: Dispatch<SetStateAction<MapData>>;
 };
+
 
 export default function MapCanvas({
   width,
   height,
-  selectedObject
+  layer,
+  selectedObject,
+  mapData,
+  setMapData
 }: MapCanvasProps) {
+  
+  const handleCellClick = (index: number) => {
+    const x = index % width;
+    const y = Math.floor(index / width);
+
+    setMapData((currentMap) => ({
+      ...currentMap,
+      [layer]: currentMap[layer].map((row, rowIndex) =>
+        row.map((cell, cellIndex) =>
+          rowIndex === y && cellIndex === x
+            ? selectedObject
+            : cell
+        )
+      )
+    }));
+  };
+
+
   return(
     <div
       className="grid"
@@ -19,15 +47,18 @@ export default function MapCanvas({
     >
         {Array.from(
           { length: width * height},
-          (_, index) => (
-            <div
-              key={index}
-              onClick={() => {
-                console.log("Cell:", index, "Object:", selectedObject);
-              }}
-              className="w-4 h-4 border border-solid border-zinc-800 box-border"
-            />
-          )
+          (_, index) => {
+            
+          const x = index % width;
+          const y = Math.floor(index / width);
+          const value = mapData[layer][y][x];
+          
+          return(
+              <div key={index} onClick={() => handleCellClick(index)} className="w-4 h-4 border border-solid border-zinc-800 box-border">
+                {value}
+              </div>
+            );
+          }
         )}
     </div>
   );

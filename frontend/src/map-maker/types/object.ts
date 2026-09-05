@@ -1,4 +1,5 @@
 export type MapObject = {
-  id: string;
+  code: string;
   name: string;
+  icon: string;
 };
