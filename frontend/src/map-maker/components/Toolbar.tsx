@@ -5,7 +5,7 @@ type ToolbarProps = {
   layer: MapLayerType;
   onLayerChange: (layer: MapLayerType) => void;
   selectedObject: string | null;
-  onSelectObject: (id: string | null) => void;
+  onSelectObject: (id: string) => void;
 };
 
 const objects: MapObject[] = [
@@ -76,18 +76,6 @@ export default function Toolbar({
         <span className="text-sm font-medium text-zinc-300">
           {layer === "background" ? "Background" : "Blocks"}
         </span>
-
-        <button
-          type="button"
-          onClick={() => onSelectObject(null)}
-          className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
-            selectedObject === null
-              ? "border-zinc-600 bg-zinc-800 text-zinc-50"
-              : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200"
-          }`}
-        >
-          Delete
-        </button>
 
         {objects.map((object) => (
           <button
