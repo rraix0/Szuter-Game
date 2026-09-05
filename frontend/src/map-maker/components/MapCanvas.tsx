@@ -1,13 +1,13 @@
 type MapCanvasProps = {
   width: number;
   height: number;
+  selectedObject: string | null;
 };
-
-
 
 export default function MapCanvas({
   width,
   height,
+  selectedObject
 }: MapCanvasProps) {
   return(
     <div
@@ -22,6 +22,9 @@ export default function MapCanvas({
           (_, index) => (
             <div
               key={index}
+              onClick={() => {
+                console.log("Cell:", index, "Object:", selectedObject);
+              }}
               className="w-4 h-4 border border-solid border-zinc-800 box-border"
             />
           )

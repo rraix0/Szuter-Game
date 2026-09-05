@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import type { MapConfig } from "../types/map";
 
 import MapCanvas from "./MapCanvas";
@@ -12,6 +14,8 @@ type MapEditorProps = {
 export default function MapEditor({
   config,
 }: MapEditorProps) {
+  const [selectedObject, setSelectedObject] = useState<string | null>(null);
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-300 p-6">
       <div className="flex flex-col gap-6">
@@ -33,13 +37,17 @@ export default function MapEditor({
 
         <div className="flex gap-6">
           <div className="shrink-0 rounded-2xl border border-zinc-800 bg-zinc-900 p-4 shadow-2xl shadow-black/40">
-            <Toolbar />
+            <Toolbar 
+              selectedObject={selectedObject}
+              onSelectObject={setSelectedObject}
+            />
           </div>
 
           <div className="min-w-0 flex-1 overflow-auto rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl shadow-black/40">
             <MapCanvas
               width={config.width}
               height={config.height}
+              selectedObject={selectedObject}
             />
           </div>
         </div>

@@ -1,6 +1,11 @@
 import { useState } from "react";
 import type { MapObject } from "../types/object";
 
+type ToolbarProps = {
+  selectedObject: string | null;
+  onSelectObject: (id: string) => void;
+};
+
 const objects: MapObject[] = [
   {
     id: "wall",
@@ -16,9 +21,11 @@ const objects: MapObject[] = [
   },
 ];
 
-export default function Toolbar() {
+export default function Toolbar({
+  selectedObject,
+  onSelectObject
+}: ToolbarProps) {
   const [layer, setlayer] = useState("background");
-  const [selectedObject, setSelectedObject] = useState<string | null>(null);
 
   return (
     <aside className="flex w-52 flex-col gap-4">
@@ -46,12 +53,12 @@ export default function Toolbar() {
         </span>
 
         {objects.map((object) => (
-          <button key={object.id} type="button" onClick={() => setSelectedObject(object.id)} className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
+          <button key={object.id} type="button" onClick={() => onSelectObject(object.id)} className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
               selectedObject === object.id
                 ? "border-zinc-600 bg-zinc-800 text-zinc-50"
                 : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200"
             }`}>
-              {object.name}
+            {object.name}
           </button>
         ))}
       </div>
