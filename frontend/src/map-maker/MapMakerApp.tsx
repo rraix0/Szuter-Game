@@ -5,13 +5,12 @@ import type { MapConfig } from "./types/map";
 import MapSetup from "./components/MapSetup";
 import MapEditor from "./components/MapEditor";
 
-
-
 export default function MapMakerApp() {
-  const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
+  const [mapConfig, setMapConfig] =
+    useState<MapConfig | null>(null);
 
   if (mapConfig === null) {
-    return(
+    return (
       <MapSetup onCreate={setMapConfig} />
     );
   }

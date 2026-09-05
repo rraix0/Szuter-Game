@@ -79,18 +79,25 @@ export default function Toolbar({
   return (
     <aside className="flex w-52 flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <label htmlFor="layer" className="text-sm font-medium text-zinc-300">
+        <label
+          htmlFor="layer"
+          className="text-sm font-medium text-zinc-300"
+        >
           Layer
         </label>
+
         <select
           id="layer"
           value={layer}
-          onChange={(event) => onLayerChange(event.target.value as MapLayerType)}
+          onChange={(event) =>
+            onLayerChange(event.target.value as MapLayerType)
+          }
           className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-zinc-50 outline-none transition hover:border-zinc-700 focus:border-zinc-600 focus:ring-2 focus:ring-zinc-700/50"
         >
           <option value="background">
             Background
           </option>
+
           <option value="blocks">
             Blocks
           </option>
