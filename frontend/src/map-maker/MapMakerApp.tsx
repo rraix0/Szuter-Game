@@ -6,6 +6,7 @@ import MapSetup from "./components/MapSetup";
 import MapEditor from "./components/MapEditor";
 
 
+
 export default function MapMakerApp() {
   const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
 
@@ -16,6 +17,6 @@ export default function MapMakerApp() {
   }
 
   return (
-    <MapSetup onCreate={setMapConfig} />
+    <MapEditor config={mapConfig} />
   );
 }

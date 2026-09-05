@@ -31,7 +31,7 @@ export default function MapSetup({ onCreate }: MapSetupProps) {
   return (
     <div className="flex flex-row min-h-screen justify-center items-center bg-zinc-950">
       <div className="w-xl h-200 bg-zinc-900 border border-zinc-800 rounded-4xl block p-8 text-zinc-50 shadow-2xl shadow-black/40">
-        <h1 className="text-3xl font-semibold tracking-tight">Szuter | Map editor</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-zinc-300">Szuter | Map editor</h1>
         <p className="text-zinc-400 mt-2 text-sm">Create a new map configuration</p>
         <br/>
         <div className="flex flex-col gap-2">
