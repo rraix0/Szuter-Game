@@ -11,28 +11,29 @@ mod routes;
 mod types;
 mod auth;
 
-use crate::surrealdb::get_connection::get_connection;
-use routes::{
-    map::{
-        get_maps::get_maps_route
+use crate::{
+    auth::admin_auth::admin_auth,
+    routes::{
+        map::{
+            create_map::create_map_route,
+            delete_map::delete_map_route,
+            get_map::get_map_route,
+            get_maps::get_maps_route,
+            update_map::update_map_route,
+        },
+        objects::{
+            create_object::create_object_route,
+            delete_object::delete_object_route,
+            get_objects::get_object_route,
+            update_object::update_object_route,
+        },
     },
-    objects:: {
-        create_object::create_object_route
-    }
+    surrealdb::{
+        get_connection::get_connection,
+        surreal_init::init_db,
+    },
+    types::app_state::AppState,
 };
-use crate::auth::admin_auth::admin_auth;
-use crate::routes::objects::delete_object::delete_object_route;
-use crate::routes::objects::get_objects::get_object_route;
-use crate::routes::objects::update_object::update_object_route;
-use crate::surrealdb::surreal_init::init_db;
-use crate::types::app_state::AppState;
-
-// our router
-async fn root() -> &'static str {
-    "TEST"
-}
-
-
 
 #[tokio::main]
 async fn main() {
@@ -50,9 +51,10 @@ async fn main() {
     let app = Router::new()
         .route(&format!("{}{}", &api_path, ""), post(|| async { "no elo" }))
         .route(&format!("{}{}", &api_path, "/get_maps"), get(get_maps_route))// done
-        .route(&format!("{}{}", &api_path, "/get_map"), post(root))
-        .route(&format!("{}{}", &api_path, "/create_map"), post(root))
-        .route(&format!("{}{}", &api_path, "/update_map"), post(root))
+        .route(&format!("{}{}", &api_path, "/get_map"), post(get_map_route))
+        .route(&format!("{}{}", &api_path, "/create_map"), post(create_map_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
+        .route(&format!("{}{}", &api_path, "/update_map"), post(update_map_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
+        .route(&format!("{}{}", &api_path, "/delete_map"), post(delete_map_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
 
         .route(&format!("{}{}", &api_path, "/get_objects"), get(get_object_route))
         .route(&format!("{}{}", &api_path, "/create_object"), post(create_object_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
