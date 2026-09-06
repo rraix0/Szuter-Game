@@ -3,19 +3,20 @@ use crate::types::app_state::AppState;
 use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use tokio::sync::Mutex;
-use crate::types::all_types::MapType;
+use crate::types::all_types::{ObjectType};
 
-pub async fn get_maps_route(
-    State(app_state): State<Arc<Mutex<AppState>>>
-) -> Result<Json<Vec<MapType>>, StatusCode>  {
+pub async fn get_object_route(
+    State(app_state): State<Arc<Mutex<AppState>>>,
+) -> Result<Json<Vec<ObjectType>>, StatusCode>  {
 
     let db = app_state.lock().await.db.clone();
 
-    let maps:Vec<MapType> = db.select("maps").await.map_err(|err| {
+    let objects:Vec<ObjectType> = db
+        .select("objects")
+        .await.map_err(|err| {
         println!("Error selecting maps: {}", err);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    Ok(Json(maps))
-
+    Ok(Json(objects.clone()))
 }

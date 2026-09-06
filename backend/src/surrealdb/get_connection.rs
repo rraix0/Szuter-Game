@@ -1,12 +1,9 @@
 use std::time::Duration;
-use surrealdb::engine::any;
-use surrealdb::engine::any::Any;
-use surrealdb::opt::auth::{Database, Root};
+use surrealdb::opt::auth::{Root};
 use surrealdb::Surreal;
 use tokio::time::sleep;
 use std::env;
 use surrealdb::engine::remote::ws::{Client, Ws};
-use surrealdb::opt::Config;
 pub async fn get_connection() -> Surreal<Client> {
     let db:Surreal<Client> = Surreal::init();
 
