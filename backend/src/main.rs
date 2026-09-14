@@ -3,8 +3,10 @@ use std::sync::Arc;
 use ::surrealdb::engine::remote::ws::Client;
 use ::surrealdb::Surreal;
 use axum::{Router, middleware};
+use axum::http::{HeaderName, Method};
 use axum::routing::{get, post};
 use tokio::sync::Mutex;
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 
 mod surrealdb;
 mod routes;
@@ -61,6 +63,15 @@ async fn main() {
         .route(&format!("{}{}", &api_path, "/delete_object"), post(delete_object_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
         .route(&format!("{}{}", &api_path, "/update_object"), post(update_object_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
 
+        .layer(
+            CorsLayer::new()
+                .allow_methods([Method::POST, Method::GET, Method::OPTIONS])
+                .allow_headers([
+                    HeaderName::from_static("content-type"),
+                    HeaderName::from_static("authorization"),
+                ])
+                .allow_origin(Any)
+        )
         .with_state(shared_state);
 
 

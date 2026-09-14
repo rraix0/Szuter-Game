@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{Bytes, RecordId, SurrealValue, Uuid};
+use surrealdb::types::{Bytes, RecordId, SurrealValue};
 
 #[derive(Clone, Debug, SurrealValue, Deserialize, Serialize)]
 pub struct MapType {
