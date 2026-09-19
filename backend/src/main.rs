@@ -4,7 +4,7 @@ use ::surrealdb::engine::remote::ws::Client;
 use ::surrealdb::Surreal;
 use axum::{Router, middleware};
 use axum::http::{HeaderName, Method};
-use axum::routing::{get, post};
+use axum::routing::{any, get, post};
 use tokio::sync::Mutex;
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 
@@ -12,6 +12,7 @@ mod surrealdb;
 mod routes;
 mod types;
 mod auth;
+mod websockets;
 
 use crate::{
     auth::admin_auth::admin_auth,
@@ -47,7 +48,7 @@ async fn main() {
 
 
 
-    let shared_state = Arc::new(Mutex::new(AppState { db}));
+    let shared_state = Arc::new(Mutex::new(AppState { db, players: None}));
     init_db(Arc::clone(&shared_state)).await.unwrap();
 
     let app = Router::new()
@@ -71,7 +72,9 @@ async fn main() {
                     HeaderName::from_static("authorization"),
                 ])
                 .allow_origin(Any)
-        )
+          )
+        .route(&format!("{}{}", &api_path, "/ws"), any(ws_handler))
+
         .with_state(shared_state);
 
 
