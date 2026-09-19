@@ -1,4 +1,4 @@
-FROM rust:bullseye as builder
+FROM rust:bookworm as builder
 
 WORKDIR /usr/src/app
 COPY . .
@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 RUN cargo build --release
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 WORKDIR /usr/src/app
 
