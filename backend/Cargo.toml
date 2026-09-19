@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 tokio = { version = "1.53.1", features = ["full"]}
-axum = {version = "0.8.9"}
+axum = {version = "0.8.9", features = ["ws"]}
 uuid = "1.26.0"
 serde_json = { version = "1.0.151"}
 serde = { version = "1.0.229", features = ["derive"] }

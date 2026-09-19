@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_APP_URL=${VITE_APP_URL}
+        - VITE_API_URL=${VITE_API_URL}
+    restart: always
+    ports:
+      - "83:80"
+    environment:
+      - VITE_APP_URL=${VITE_APP_URL}
+      - VITE_API_URL=${VITE_API_URL}
+    networks:
+      - dokploy-network
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      - SURREAL_HOST=${SURREAL_HOST}
+      - SURREAL_NAMESPACE=${SURREAL_NAMESPACE}
+      - SURREAL_DATABASE=${SURREAL_DATABASE}
+      - SURREAL_USERNAME=${SURREAL_USERNAME}
+      - SURREAL_PASSWORD=${SURREAL_PASSWORD}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - frontend
+    ports:
+      - "8090:8000"
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
