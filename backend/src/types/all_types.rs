@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{Bytes, RecordId, SurrealValue, Uuid};
+use surrealdb::types::{Bytes, RecordId, SurrealValue};
 
 #[derive(Clone, Debug, SurrealValue, Deserialize, Serialize)]
 pub struct MapType {
     pub id: RecordId,
     pub name: String,
-    pub data_background: Vec<Vec<Uuid>>,
-    pub data_blocks: Vec<Vec<Uuid>>,
+    pub data_background: Vec<Vec<RecordId>>,
+    pub data_blocks: Vec<Vec<RecordId>>,
 }
 
 #[derive(Clone, Debug, SurrealValue, Deserialize, Serialize)]

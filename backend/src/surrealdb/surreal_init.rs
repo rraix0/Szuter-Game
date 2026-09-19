@@ -1,3 +1,4 @@
+use std::env;
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use surrealdb::types::{SurrealValue};
@@ -67,7 +68,7 @@ pub async fn init_db(app_state: Arc<Mutex<AppState>>) -> Result<(), &'static str
     if existing.is_none() {
         let _:Option<SettingsType> = db.create(("settings", 0))
             .content(SettingsInit {
-                admin_password: "skrzyp".to_string(),
+                admin_password: env::var("DEFAULT_ADMIN_PASS").unwrap().to_string(),
             })
             .await.map_err(|err| {
             println!("Error executing query: {}", err);

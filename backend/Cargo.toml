@@ -11,3 +11,4 @@ serde_json = { version = "1.0.151"}
 serde = { version = "1.0.229", features = ["derive"] }
 surrealdb = "3.2.4"
 dotenvy = "0.15.7"
+tower-http = { version = "0.7.1", features = ["cors"] }
