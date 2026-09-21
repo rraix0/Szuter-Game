@@ -78,9 +78,9 @@ async fn main() {
         .with_state(shared_state);
 
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 
-    println!("Listening on http://0.0.0.0:3000");
+    println!("Listening on http://0.0.0.0:8000");
     axum::serve(listener, app).await.unwrap();
 
 
