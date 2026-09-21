@@ -3,14 +3,14 @@ use crate::types::app_state::AppState;
 use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{RecordId, SurrealValue};
+use surrealdb::types::{SurrealValue};
 use tokio::sync::Mutex;
-use crate::types::all_types::{ObjectType};
+use crate::types::all_types::{BetterId, IdConverter, ObjectType};
 
 
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct DeleteObject {
-    pub id: RecordId
+    pub id: BetterId
 }
 
 
@@ -22,7 +22,7 @@ pub async fn delete_object_route(
     let db = app_state.lock().await.db.clone();
 
     let _:Option<ObjectType> = db
-        .delete(data.id)
+        .delete(data.id.convert())
         .await.map_err(|err| {
         println!("Error selecting maps: {}", err);
         StatusCode::INTERNAL_SERVER_ERROR

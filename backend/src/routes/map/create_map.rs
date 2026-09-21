@@ -3,16 +3,16 @@ use crate::types::app_state::AppState;
 use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{RecordId, SurrealValue};
+use surrealdb::types::{SurrealValue};
 use tokio::sync::Mutex;
-use crate::types::all_types::{MapType};
+use crate::types::all_types::{BetterId, MapType};
 
 
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct CreateMap {
     pub name: String,
-    pub data_background: Vec<Vec<RecordId>>,
-    pub data_blocks: Vec<Vec<RecordId>>,
+    pub data_background: Vec<Vec<BetterId>>,
+    pub data_blocks: Vec<Vec<BetterId>>,
 }
 
 
