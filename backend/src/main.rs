@@ -37,7 +37,7 @@ use crate::{
     },
     types::app_state::AppState,
 };
-
+use crate::websockets::main::ws_handler;
 #[tokio::main]
 async fn main() {
     dotenv().ok();
