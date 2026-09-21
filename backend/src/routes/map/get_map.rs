@@ -1,16 +1,17 @@
+use std::fmt::Debug;
 use std::sync::Arc;
 use crate::types::app_state::AppState;
 use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 
-use surrealdb::types::{RecordId, SurrealValue};
+use surrealdb::types::{RecordId, RecordIdKey, SurrealValue, ToSql, Uuid};
 use tokio::sync::Mutex;
-use crate::types::all_types::MapType;
+use crate::types::all_types::{BetterId, IdConverter, MapType};
 
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct GetMapData {
-    pub id: RecordId
+    pub id: BetterId,
 }
 
 
@@ -22,7 +23,8 @@ pub async fn get_map_route(
 
     let db = app_state.lock().await.db.clone();
 
-    let map: Option<MapType> = db.select(data.id).await.map_err(|err| {
+
+    let map: Option<MapType> = db.select(data.id.convert()).await.map_err(|err| {
         println!("Error selecting maps: {}", err);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;

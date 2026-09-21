@@ -5,12 +5,12 @@ use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use surrealdb::types::{RecordId, SurrealValue};
 use tokio::sync::Mutex;
-use crate::types::all_types::{MapType};
+use crate::types::all_types::{BetterId, IdConverter, MapType};
 
 
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct DeleteMap {
-    pub id: RecordId
+    pub id: BetterId,
 }
 
 
@@ -22,7 +22,7 @@ pub async fn delete_map_route(
     let db = app_state.lock().await.db.clone();
 
     let _:Option<MapType> = db
-        .delete(data.id)
+        .delete(data.id.convert())
         .await.map_err(|err| {
         println!("Error selecting maps: {}", err);
         StatusCode::INTERNAL_SERVER_ERROR

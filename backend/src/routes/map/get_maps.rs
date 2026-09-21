@@ -6,12 +6,11 @@ use serde::{Deserialize, Serialize};
 use surrealdb::IndexedResults;
 use surrealdb::types::{RecordId, SurrealValue};
 use tokio::sync::Mutex;
-
-
+use crate::types::all_types::BetterId;
 
 #[derive(Clone, Debug, SurrealValue, Deserialize, Serialize)]
 pub struct GetMapType {
-    pub id: RecordId,
+    pub id: BetterId,
     pub name: String,
 }
 
@@ -30,7 +29,6 @@ pub async fn get_maps_route(
         println!("Error fetching maps: {}", err);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-
 
 
 

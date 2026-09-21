@@ -5,10 +5,10 @@ use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use surrealdb::types::{Bytes, RecordId, SurrealValue};
 use tokio::sync::Mutex;
-use crate::types::all_types::{ObjectType};
+use crate::types::all_types::{BetterId, ObjectType};
 
 
-
+/*
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct UpdateObjectData {
     pub data: Bytes,
@@ -21,28 +21,24 @@ pub struct UpdateObjectData {
 
 #[derive(Deserialize, Serialize, Debug, Clone, SurrealValue)]
 pub struct UpdateObject {
+    #[serde(serialize_with = "serialize_id")]
     pub id: RecordId,
     pub data: UpdateObjectData
 
 }
+
+ */
 pub async fn update_object_route(
     State(app_state): State<Arc<Mutex<AppState>>>,
-    Json(data): Json<UpdateObject>
+    Json(data): Json<ObjectType>
 ) -> Result<Json<ObjectType>, StatusCode>  {
 
     let db = app_state.lock().await.db.clone();
 
     let object:Option<ObjectType> = db
-        .update(data.id)
+        .update(data.id.clone())
         .content(
-            UpdateObjectData {
-                data: data.data.data,
-                group: data.data.group,
-                name: data.data.name,
-                shoot_by: data.data.shoot_by,
-                strength: data.data.strength,
-                walk_on: data.data.walk_on,
-            }
+            data
         )
         .await.map_err(|err| {
         println!("Error updating maps: {}", err);
