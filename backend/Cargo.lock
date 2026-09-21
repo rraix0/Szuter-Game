@@ -3,20 +3,6 @@
 version = 4
 
 [[package]]
-name = "ShooterGame"
-version = "0.1.0"
-dependencies = [
- "axum",
- "dotenvy",
- "serde",
- "serde_json",
- "surrealdb",
- "tokio",
- "tower-http 0.7.1",
- "uuid",
-]
-
-[[package]]
 name = "addr"
 version = "0.15.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -262,6 +248,20 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "backend"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "dotenvy",
+ "serde",
+ "serde_json",
+ "surrealdb",
+ "tokio",
+ "tower-http 0.7.1",
+ "uuid",
 ]
 
 [[package]]
