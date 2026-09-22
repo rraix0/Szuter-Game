@@ -19,6 +19,31 @@ export default function ObjectManagerApp() {
     }
   }
 
+  async function deleteObject(betterId: string) {
+    try {
+      let password = prompt("Give password for Authentication");
+
+      const response = await axios.post(
+        import.meta.env.VITE_API_APP_URL + "/delete_object",
+          {
+              "id": betterId
+          },
+          {
+            headers: {
+              "Authorization": password
+            }
+          }
+      );
+      if(response.status === 200){
+        setObjects((prev) => prev.filter((obj) => obj.id !== betterId));
+      }
+
+
+    } catch (error) {
+      console.error("Failed to fetch objects:", error);
+    }
+  }
+
   useEffect(() => {
     fetchObjects();
   }, []);
@@ -96,6 +121,7 @@ export default function ObjectManagerApp() {
                         <button
                           type="button"
                           className="cursor-pointer rounded-lg border border-red-950 bg-red-950/20 px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-950/40"
+                          onClick={() => deleteObject(object.id)}
                         >
                           Delete
                         </button>
