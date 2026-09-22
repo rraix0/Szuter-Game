@@ -14,7 +14,7 @@ pub struct CreateObject {
     pub group: String,
     pub name: String,
     pub shoot_by: bool,
-    pub strength: Option<i32>,
+    pub strength: Option<u8>,
     pub walk_on: bool,
 }
 
