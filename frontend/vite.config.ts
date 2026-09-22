@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   const viteAppUrl = new URL(env.VITE_APP_URL);
-
+  
   return {
     plugins: [
       react(),

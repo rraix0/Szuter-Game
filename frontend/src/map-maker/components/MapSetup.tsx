@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { MapConfig } from "../types/map";
+import type { MapConfig } from "../../types/mapData";
 
 type MapSetupProps = {
   onCreate: (config: MapConfig) => void;

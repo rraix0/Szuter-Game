@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { MapConfig } from "./types/map";
+import type { MapConfig } from "../types/mapData";
 
 import MapSetup from "./components/MapSetup";
 import MapEditor from "./components/MapEditor";

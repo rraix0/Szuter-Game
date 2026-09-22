@@ -4,7 +4,7 @@ import type {
   MapConfig,
   MapData,
   MapLayerType
-} from "../types/map";
+} from "../../types/mapData";
 
 import MapCanvas from "./MapCanvas";
 import Toolbar from "./Toolbar";
