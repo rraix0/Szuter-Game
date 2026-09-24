@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { MapData, MapLayerType } from "../types/map";
+import type { MapData, MapLayerType } from "../../types/mapData";
 
 import type { Dispatch, SetStateAction } from "react";
 

@@ -1,2 +1,3 @@
-# Shooter-Game
-A shooter game
+# Szuter-Game
+
+![Szuter-Game Logo](./frontend/src/assets/szuterGameLogo.png)

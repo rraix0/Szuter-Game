@@ -1,6 +1,6 @@
-import type { MapObject } from "../types/object";
+import type { MapObject } from "../../types/mapObject";
 
-import type { MapLayerType } from "../types/map";
+import type { MapLayerType } from "../../types/mapData";
 
 type ToolbarProps = {
   layer: MapLayerType;
