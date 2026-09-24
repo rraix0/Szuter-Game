@@ -1,3 +1,3 @@
 # Szuter-Game
 
-frontend/src/assets/szuterGameLogo.png
+![Szuter-Game Logo](./frontend/src/assets/szuterGameLogo.png)
