@@ -11,7 +11,6 @@ export default function ObjectManagerApp() {
       const response = await axios.get(
         import.meta.env.VITE_API_APP_URL + "/get_objects"
       );
-
       console.log("API:", response.data);
       setObjects(response.data);
     } catch (error) {
@@ -21,24 +20,25 @@ export default function ObjectManagerApp() {
 
   async function deleteObject(betterId: string) {
     try {
-      let password = prompt("Give password for Authentication");
+      const password = prompt("Give password for Authentication");
 
       const response = await axios.post(
         import.meta.env.VITE_API_APP_URL + "/delete_object",
-          {
-              "id": betterId
-          },
-          {
-            headers: {
-              "Authorization": password
-            }
+        {
+          id: betterId
+        },
+        {
+          headers: {
+            Authorization: password
           }
+        }
       );
-      if(response.status === 200){
-        setObjects((prev) => prev.filter((obj) => obj.id !== betterId));
+
+      if (response.status === 200) {
+        setObjects((prev) =>
+          prev.filter((obj) => obj.id !== betterId)
+        );
       }
-
-
     } catch (error) {
       console.error("Failed to fetch objects:", error);
     }
@@ -63,17 +63,42 @@ export default function ObjectManagerApp() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-950">
-                  <th className="px-5 py-4 font-medium text-zinc-400">Preview</th>
-                  <th className="px-5 py-4 font-medium text-zinc-400">Name</th>
-                  <th className="px-5 py-4 font-medium text-zinc-400">Group</th>
-                  <th className="px-5 py-4 font-medium text-zinc-400">Shoot By</th>
-                  <th className="px-5 py-4 font-medium text-zinc-400">Strength</th>
-                  <th className="px-5 py-4 font-medium text-zinc-400">Walk On</th>
-                  <th className="px-5 py-4 text-right font-medium text-zinc-400">Actions</th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Preview
+                  </th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Name
+                  </th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Group
+                  </th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Shoot By
+                  </th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Strength
+                  </th>
+                  <th className="px-5 py-4 font-medium text-zinc-400">
+                    Walk On
+                  </th>
+                  <th className="px-5 py-4 text-right font-medium text-zinc-400">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
+                <tr className="border-b border-zinc-800">
+                  <td colSpan={7} className="p-3">
+                    <button
+                      type="button"
+                      className="w-full cursor-pointer rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800 hover:text-zinc-50"
+                    >
+                      Add Object
+                    </button>
+                  </td>
+                </tr>
+
                 {objects.map((object) => (
                   <tr
                     key={object.id}
