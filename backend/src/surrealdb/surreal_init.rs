@@ -44,7 +44,8 @@ pub async fn init_db(app_state: Arc<Mutex<AppState>>) -> Result<(), &'static str
     let settings = "
     DEFINE TABLE IF NOT EXISTS settings TYPE NORMAL SCHEMAFULL PERMISSIONS NONE;
     DEFINE FIELD IF NOT EXISTS id ON settings TYPE int;
-    DEFINE FIELD IF NOT EXISTS admin_password ON settings TYPE string;";
+    DEFINE FIELD IF NOT EXISTS admin_password ON settings TYPE string;
+    ";
     tables.push(settings.to_string());
 
 
