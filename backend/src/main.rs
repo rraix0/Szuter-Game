@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use dotenvy::dotenv;
 use std::sync::Arc;
 use ::surrealdb::engine::remote::ws::Client;
@@ -13,6 +14,7 @@ mod routes;
 mod types;
 mod auth;
 mod websockets;
+
 
 use crate::{
     auth::admin_auth::admin_auth,
@@ -37,6 +39,8 @@ use crate::{
     },
     types::app_state::AppState,
 };
+use crate::routes::players::create_player::create_player_route;
+use crate::types::game_main::Game;
 use crate::websockets::main::ws_handler;
 #[tokio::main]
 async fn main() {
@@ -48,7 +52,12 @@ async fn main() {
 
 
 
-    let shared_state = Arc::new(Mutex::new(AppState { db, players: None}));
+    let shared_state = Arc::new(Mutex::new(
+        AppState {
+            db,
+            game: Game::new()
+        }
+    ));
     init_db(Arc::clone(&shared_state)).await.unwrap();
 
     let app = Router::new()
@@ -64,6 +73,7 @@ async fn main() {
         .route(&format!("{}{}", &api_path, "/delete_object"), post(delete_object_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
         .route(&format!("{}{}", &api_path, "/update_object"), post(update_object_route) .layer(middleware::from_fn_with_state(shared_state.clone(), admin_auth)))
 
+        .route(&format!("{}{}", &api_path, "/register_player"), post(create_player_route))
         .layer(
             CorsLayer::new()
                 .allow_methods([Method::POST, Method::GET, Method::OPTIONS])
@@ -82,6 +92,4 @@ async fn main() {
 
     println!("Listening on http://0.0.0.0:8000");
     axum::serve(listener, app).await.unwrap();
-
-
 }

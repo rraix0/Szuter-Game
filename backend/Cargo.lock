@@ -256,6 +256,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "dotenvy",
+ "futures-util",
  "serde",
  "serde_json",
  "surrealdb",
