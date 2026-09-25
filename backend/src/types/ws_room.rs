@@ -1,7 +1,5 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{RecordId, Uuid};
-use crate::types::ws_player::WSPlayer;
+use surrealdb::types::{RecordId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WsRoom {

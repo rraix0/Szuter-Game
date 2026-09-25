@@ -1,13 +1,10 @@
-use std::collections::HashMap;
 use std::sync::Arc;
 use crate::types::app_state::{AppState};
 use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
-use surrealdb::types::{Bytes, SurrealValue};
 use tokio::sync::Mutex;
 use uuid::Uuid;
-use crate::types::all_types::{ObjectType};
 use crate::types::ws_player::{PlayerPosition, WSPlayer};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -41,13 +38,13 @@ pub async fn create_player_route(
         hp: 100,
     };
 
+    println!("Player created: {:?}", player.name);
 
     app_state.game.players.insert(
         uuid.clone(),
         player
     );
 
-    println!("Player created: {:?}", app_state.game.players);
 
     Ok(Json(
         CreatePlayerResponse{

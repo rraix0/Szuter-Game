@@ -1,28 +1,15 @@
-use std::sync::Arc;
-use std::thread;
+use std::sync::{Arc};
 use axum::extract::{State, WebSocketUpgrade};
-use axum::extract::ws::{CloseFrame, Message, Utf8Bytes, WebSocket};
-use axum::http::StatusCode;
-use axum::Json;
+use axum::extract::ws::{Message, WebSocket};
 use axum::response::Response;
-use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, Mutex};
-use uuid::Uuid;
-use serde_json::{
-    from_str,
-    to_string,
-};
 use crate::types::app_state::{AppState};
-use crate::types::ws_player::{WSPlayer, WsPlayerRecv, WsPlayerResponse};
-use futures_util::{sink::SinkExt, stream::{StreamExt, SplitSink, SplitStream}};
-
-
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct RecvWsLogin {
-    pub uuid: Uuid,
-    pub jwt: Uuid,
-}
+use crate::types::ws_player::{WsPlayerErrorMessage, WsPlayerInfoMessage, WsPlayerRecv, WsPlayerResponse};
+use futures_util::{sink::SinkExt, stream::{StreamExt}};
+use tokio::time;
+use std::time::Duration;
+use tokio_util::sync::CancellationToken;
+use crate::websockets::functions::login_ws::login_ws;
 
 pub async fn ws_handler(
     State(app_state): State<Arc<Mutex<AppState>>>,
@@ -31,145 +18,139 @@ pub async fn ws_handler(
 
     ws.on_upgrade(|socket| handle_socket(socket, app_state))
 }
+async fn handle_socket(mut socket: WebSocket, main_app_state: Arc<Mutex<AppState>>) {
+    let cancel_token = CancellationToken::new();    // to kill all threads
 
+    let (player_recv, _rx) = broadcast::channel::<WsPlayerRecv>(16);
+    let (player_send, _rx) = broadcast::channel::<WsPlayerResponse>(16);
 
-
-
-async fn handle_socket(mut socket: WebSocket, app_state: Arc<Mutex<AppState>>) {
     let (mut sender, mut receiver) = socket.split();
+    // WS SENDER
+    let mut player_send_receiver_clone = player_send.subscribe();
+    let player_recv_clone = player_recv.clone();
+    let player_send_clone = player_send.clone();
 
-    let mut app_state = app_state.lock().await;
+    let cancel_token_clone = cancel_token.clone();
+    let token = cancel_token.child_token();
+    tokio::spawn(async move {
+        loop {
+            tokio::select! {
+                _ = token.cancelled() => {
+                    println!("Task 1 zakończony");
+                    break;
+                }
 
-    let mut logged_in = false;
-
-    while !logged_in {
-        if let Some(Ok(login)) = receiver.next().await {
-            if let Message::Text(text) = login {
-                let text = text.to_string();
-
-                let x = serde_json::from_str::<RecvWsLogin>(&text);
-
-                match x {
-                    Ok(login) => {
-                        let player = app_state
-                            .game
-                            .get_player_authorized(&login.uuid, &login.jwt);
-
-                        match player {
-                            Ok(_) => {
-                                logged_in = true;
-                            }
-                            Err(_) => {
-                                let _ = sender
-                                    .send(Message::Close(Some(CloseFrame {
-                                        code: 1008,
-                                        reason: "Invalid login".into(),
-                                    })))
-                                    .await
-                                    .ok();
-
+                msg = player_send_receiver_clone.recv() => {
+                    match msg {
+                        Ok(msg) => {
+                            let msg_json = serde_json::to_string(&msg).unwrap();
+                            if sender.send(Message::text(msg_json)).await.is_err() {
+                                println!("Disconnected 1");
+                                cancel_token_clone.cancel();
                                 return;
                             }
                         }
+                        Err(_) => {}
                     }
+                }
 
-                    Err(_) => {
-                        let _ = sender
-                            .send(Message::Close(Some(CloseFrame {
-                                code: 1008,
-                                reason: "Invalid login".into(),
-                            })))
-                            .await
-                            .ok();
+                msg = receiver.next() => {
+                    if let Some(Ok(msg)) = msg {
+                        if let Message::Text(text) = msg {
+                            let text = text.to_string();
+                            let x= serde_json::from_str::<WsPlayerRecv>(&text).map_err( |err| {
+                                err
+                            });
 
+                            match x {
+                                Ok(msg) => {
+                                    let _ = player_recv_clone.send(msg).map_err(|err| {
+                                        println!("{:?}", err)
+                                    });
+                                }
+                                Err(err) => {
+                                    println!("Failed to parse json: {:?}", err);
+                                    let z = player_send_clone.send(
+                                        WsPlayerResponse::ErrorMessage(
+                                            WsPlayerErrorMessage::from(err.to_string())
+                                        )
+                                    ).map_err(|err| {
+                                        println!("{:?}", err)
+                                    });
+                                    println!("{:?}", z);
+                                }
+                            }
+                        }
+                    } else {
+                        println!("Disconnected b");
+                        cancel_token_clone.cancel();
                         return;
                     }
                 }
             }
         }
-    }
+    });
+    let player_recv_clone = player_recv.clone();
+    let player_send_clone = player_send.clone();
+
+    let app_state = Arc::clone(&main_app_state);
+    let player_uuid = login_ws(app_state, player_recv_clone, player_send_clone).await.unwrap();
+
+    // TODO: add player unlogged kick threads
 
 
-
-
-
-
-    let (player_recv, rx) = broadcast::channel::<WsPlayerRecv>(16);
-    let (player_send, rx) = broadcast::channel::<String>(16);
-
-
-
-
-    // create player
     let mut player_recv_clone = player_recv.subscribe();
-    let mut player_send_clone = player_send.clone();
+    let player_send_clone = player_send.clone();
+    let app_state = Arc::clone(&main_app_state);
+    let mut interval = time::interval(Duration::from_millis(10));
 
+    let token = cancel_token.child_token();
+    tokio::spawn(async move {
+        loop {
+            tokio::select! {
+                _ = token.cancelled() => {
+                    println!("Task 2 zakończony");
+                    break;
+                }
 
-    tokio::task::spawn(async move {
-        while let Ok(message) = player_recv_clone.recv().await {
-            println!("RECEIVED: {:?}", message);
-        }
-    });
+                msg = player_recv_clone.recv() => {
+                    if let Ok(message) = msg {
+                        println!("RECEIVED: {:?}", message);
+                        match message {
+                            WsPlayerRecv::Position(position) => {
+                                let mut app_state = app_state.lock().await;
+                                let player = app_state.game.get_player_mut(&player_uuid);
+                                if let Some(player) = player {
+                                    player.pos = position;
+                                }
+                            }
+                            WsPlayerRecv::SelectWeapon(_) => {}
+                            WsPlayerRecv::JoinRoom(_) => {
+                                let app_state_clone = Arc::clone(&app_state);
 
-    tokio::task::spawn(async move {
-
-    });
-
-
-
-
-
-
-
-
-    let mut player_send_clone = player_send.subscribe();
-    thread::spawn( async move || {
-
-        while let Ok(x) = player_send_clone.recv().await {
-            if sender.send(Message::text(x)).await.is_err() {
-                println!("Disconnected");
-                return;
-            }
-        }
-        println!("Disconnected");
-    });
-
-
-
-
-    let mut player_recv_clone = player_recv.clone();
-    let mut player_send_clone = player_send.clone();
-
-    while let Some(msg) = receiver.next().await {
-        let msg = if let Ok(msg) = msg {
-
-            if let Message::Text(text) = msg {
-                let text = text.to_string();
-                let x= serde_json::from_str::<WsPlayerRecv>(&text).map_err( |err| {
-                    err
-                });
-
-                match x {
-                    Ok(msg) => {
-                        let _ = player_recv_clone.send(msg).map_err(|err| {
-                            println!("{:?}", err)
-                        });
-                    }
-                    Err(err) => {
-                        println!("Failed to parse json: {:?}", err);
-                        let z = player_send_clone.send(err.to_string()).map_err(|err| {
-                            println!("{:?}", err)
-                        });
-                        println!("{:?}", z);
+                                let mut app_state = app_state_clone.lock().await;
+                                let app_state1 = app_state_clone.lock().await;
+                                let x = app_state.game.join_game(app_state1.db.clone(), player_uuid).await;
+                                match x {
+                                    Ok(x) => {
+                                        let _ = player_send_clone.send(WsPlayerResponse::InfoMessage(WsPlayerInfoMessage::from(format!("Joined room: {}", x))));
+                                    }
+                                    Err(err) => {
+                                        let _ = player_send_clone.send(WsPlayerResponse::ErrorMessage(WsPlayerErrorMessage::from(format!("Error joining room: {}", err))));
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
                     }
                 }
+
+                _ = interval.tick() => {
+                    //app_state.game.get_players_in_room(&player_uuid);
+                    //print!("tick");
+                    let _ = player_send_clone.send(WsPlayerResponse::InfoMessage(WsPlayerInfoMessage::from("tick".to_string())));
+                }
             }
-
-
-        } else {
-            println!("Disconnected");
-            return;
-        };
-
-    }
+        }
+    });
 }

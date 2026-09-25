@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use tokio::task::JoinHandle;
 use uuid::Uuid;
+
 
 // WHOLE PLAYER
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,12 +24,17 @@ pub struct PlayerPosition {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SelectWeapon {
-    pub weapon: Uuid,
+    pub uuid: Uuid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SelectMap {
-    pub map: Uuid,
+pub struct JoinRoom {
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct LoginWs {
+    pub uuid: Uuid,
+    pub jwt: Uuid,
 }
 
 
@@ -35,24 +42,38 @@ pub struct SelectMap {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum  WsPlayerRecv {
+    Login(LoginWs),
     Position(PlayerPosition),
-    SelectMap(SelectMap),
     SelectWeapon(SelectWeapon),
+    JoinRoom(JoinRoom),
 }
 
 
 // RESPONSE
 
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum Status {
-    Error,
-    Info,
+pub struct WsPlayerErrorMessage {
+    pub message: String,
+}
+impl WsPlayerErrorMessage {
+    pub fn from(msg :String) -> WsPlayerErrorMessage {
+        WsPlayerErrorMessage {
+            message: msg,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WsPlayerInfoMessage {
-    pub status: Status,
     pub message: String,
+}
+impl WsPlayerInfoMessage {
+    pub fn from(msg :String) -> WsPlayerInfoMessage {
+        WsPlayerInfoMessage {
+            message: msg,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,5 +85,6 @@ pub struct SendPlayersPositions {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum  WsPlayerResponse {
     PlayersPosition(SendPlayersPositions),
-    ErrorMessage(WsPlayerInfoMessage),
+    InfoMessage(WsPlayerInfoMessage),
+    ErrorMessage(WsPlayerErrorMessage),
 }

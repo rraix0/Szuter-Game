@@ -4,7 +4,7 @@ use axum::{extract::{State}, Json};
 use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use surrealdb::IndexedResults;
-use surrealdb::types::{RecordId, SurrealValue};
+use surrealdb::types::{SurrealValue};
 use tokio::sync::Mutex;
 use crate::types::all_types::BetterId;
 

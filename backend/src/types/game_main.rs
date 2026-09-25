@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use surrealdb::engine::remote::ws::Client;
 use surrealdb::Surreal;
@@ -47,7 +46,7 @@ impl Game {
         players_in_room
     }
 
-    pub async fn join_game(&mut self, db: Surreal<Client>, player_uuid: Uuid) -> Result<(), String> {
+    pub async fn join_game(&mut self, db: Surreal<Client>, player_uuid: Uuid) -> Result<Uuid, String> {
         let rooms = self.get_rooms();
 
         let room_uuid: Uuid = {
@@ -80,7 +79,7 @@ impl Game {
         let player = self.get_player_mut(&player_uuid).ok_or("Player not found")?;
 
         player.room = Some(room_uuid);
-        Ok(())
+        Ok(room_uuid)
     }
 
     pub async fn create_random_room(&mut self, db: Surreal<Client>) -> Result<Uuid, String> {

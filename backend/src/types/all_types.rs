@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use surrealdb::types::{Bytes, RecordId, RecordIdKey, SurrealValue, Table, ToSql, Uuid};
+use surrealdb::types::{Bytes, RecordId, RecordIdKey, SurrealValue, Table, Uuid};
 
 
 fn serialize_id<S>(id: &RecordId, serializer: S) -> Result<S::Ok, S::Error>

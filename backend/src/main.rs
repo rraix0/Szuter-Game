@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use dotenvy::dotenv;
 use std::sync::Arc;
 use ::surrealdb::engine::remote::ws::Client;
@@ -7,7 +6,7 @@ use axum::{Router, middleware};
 use axum::http::{HeaderName, Method};
 use axum::routing::{any, get, post};
 use tokio::sync::Mutex;
-use tower_http::cors::{AllowOrigin, Any, CorsLayer};
+use tower_http::cors::{Any, CorsLayer};
 
 mod surrealdb;
 mod routes;
